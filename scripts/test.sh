@@ -37,8 +37,8 @@ if [[ $TEST_SUITE == "unit" ]]; then
 	go get golang.org/x/tools/cmd/cover
 	
 	COVERALLS_TOKEN=t47LG6BQsfLwb9WxB56hXUezvwpED6D11
-	TEST_DIRS="main.go influx/"
-	VET_DIRS=". ./influx/..."
+	TEST_DIRS="main.go kafka/"
+	VET_DIRS=". ./kafka/..."
 
 	set -e
 
