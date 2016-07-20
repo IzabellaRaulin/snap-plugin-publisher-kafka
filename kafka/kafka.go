@@ -20,7 +20,16 @@ limitations under the License.
 package kafka
 
 import (
+//	"bufio"
+	"bytes"
+	"encoding/gob"
+	"encoding/json"
+	"fmt"
+//	"os"
+
 	"strings"
+
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/intelsdi-x/snap/control/plugin"
 	"github.com/intelsdi-x/snap/control/plugin/cpolicy"
@@ -47,10 +56,41 @@ func NewKafkaPublisher() *kafkaPublisher {
 
 // Publish sends data to a Kafka server
 func (k *kafkaPublisher) Publish(contentType string, content []byte, config map[string]ctypes.ConfigValue) error {
+
+	// Inserted and modified codes from intelsdi-x/snap-plugin-publisher-file/file/file.go
+
+	logger := log.New()
+	logger.Println("Publishing started")
+	var metrics []plugin.MetricType
+
+	switch contentType {
+	case plugin.SnapGOBContentType:
+		dec := gob.NewDecoder(bytes.NewBuffer(content))
+		if err := dec.Decode(&metrics); err != nil {
+			logger.Printf("Error decoding: error=%v content=%v", err, content)
+			return err
+		}
+	default:
+		logger.Printf("Error unknown content type '%v'", contentType)
+		return fmt.Errorf("Unknown content type '%s'", contentType)
+	}
+
+	logger.Printf("publishing %v metrics to %v", len(metrics), config)
+
+	jsonOut, err := json.Marshal(metrics)
+	if err != nil {
+		return fmt.Errorf("Error while marshalling metrics to JSON: %v", err)
+	}
+
+	// Inserted codes end
+
+
+
 	topic := config["topic"].(ctypes.ConfigValueStr).Value
 	brokers := parseBrokerString(config["brokers"].(ctypes.ConfigValueStr).Value)
 	//
-	err := k.publish(topic, brokers, content)
+//	err := k.publish(topic, brokers, content)
+	err = k.publish(topic, brokers, []byte(jsonOut))
 	return err
 }
 
