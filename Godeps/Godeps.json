@@ -9,22 +9,8 @@
 			"Rev": "cd7d1bbe41066b6c1f19780f895901052150a575"
 		},
 		{
-			"ImportPath": "github.com/eapache/go-resiliency/breaker",
-			"Comment": "v1.0.0",
-			"Rev": "6800482f2c813e689c88b7ed3282262385011890"
-		},
-		{
-			"ImportPath": "github.com/eapache/queue",
-			"Comment": "v1.0.1",
-			"Rev": "c0c762fac2fc60e07f19af79c19164ac588329de"
-		},
-		{
 			"ImportPath": "github.com/golang/protobuf/proto",
 			"Rev": "8616e8ee5e20a1704615e6c8d7afcdac06087a67"
-		},
-		{
-			"ImportPath": "github.com/golang/snappy",
-			"Rev": "723cc1e459b8eea2dea4583200fd60757d40097a"
 		},
 		{
 			"ImportPath": "github.com/gopherjs/gopherjs/js",
@@ -99,10 +85,6 @@
 			"ImportPath": "github.com/jtolds/gls",
 			"Comment": "v4.2.0",
 			"Rev": "8ddce2a84170772b95dd5d576c48d517b22cac63"
-		},
-		{
-			"ImportPath": "github.com/klauspost/crc32",
-			"Rev": "999f3125931f6557b991b2f8472172bdfa578d38"
 		},
 		{
 			"ImportPath": "github.com/robfig/cron",
@@ -202,11 +184,6 @@
 		{
 			"ImportPath": "google.golang.org/grpc/transport",
 			"Rev": "88aeffff979aa77aa502cb011423d0a08fa12c5a"
-		},
-		{
-			"ImportPath": "gopkg.in/Shopify/sarama.v1",
-			"Comment": "v1.8.0",
-			"Rev": "4ba9bba6adb6697bcec3841e1ecdfecf5227c3b9"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
