@@ -20,13 +20,10 @@ limitations under the License.
 package kafka
 
 import (
-	//	"bufio"
 	"bytes"
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
-	//	"os"
-
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
@@ -58,7 +55,6 @@ func NewKafkaPublisher() *kafkaPublisher {
 func (k *kafkaPublisher) Publish(contentType string, content []byte, config map[string]ctypes.ConfigValue) error {
 
 	// Inserted and modified codes from intelsdi-x/snap-plugin-publisher-file/file/file.go
-
 	logger := log.New()
 	logger.Println("Publishing started")
 	var metrics []plugin.MetricType

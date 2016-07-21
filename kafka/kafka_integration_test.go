@@ -22,12 +22,17 @@ limitations under the License.
 package kafka
 
 import (
+	"bytes"
+	"encoding/gob"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"testing"
 	"time"
 
+	"github.com/intelsdi-x/snap/control/plugin"
+	"github.com/intelsdi-x/snap/core"
 	"github.com/intelsdi-x/snap/core/ctypes"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -35,6 +40,14 @@ import (
 )
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+var mockMetric = plugin.MetricType{
+	Namespace_:   core.NewNamespace("mock", "foo"),
+	Data_:        1,
+	Timestamp_:   time.Now(),
+	Description_: "mock metric",
+	Unit_:        "kB",
+}
 
 // integration test
 func TestPublish(t *testing.T) {
@@ -50,30 +63,50 @@ func TestPublish(t *testing.T) {
 	fmt.Printf("Topic: %s\n", topic)
 	config := make(map[string]ctypes.ConfigValue)
 	Convey("Publish to Kafka", t, func() {
-		Convey("publish and consume", func() {
-			k := NewKafkaPublisher()
+		k := NewKafkaPublisher()
+		var buf bytes.Buffer
+		enc := gob.NewEncoder(&buf)
 
-			// Build some config
+		Convey("publish mock metrics and consume", func() {
+			contentType := plugin.SnapGOBContentType
+			metrics := []plugin.MetricType{
+				mockMetric,
+			}
+
+			enc.Encode(metrics)
+
+			// set config items
 			config["brokers"] = ctypes.ConfigValueStr{Value: brokers}
 			config["topic"] = ctypes.ConfigValueStr{Value: topic}
 
 			// Get validated policy
-			cp, _ := k.GetConfigPolicy()
+			cp, cp_err := k.GetConfigPolicy()
+			Convey("validatation of config policy", func() {
+				So(cp_err, ShouldBeNil)
+				So(cp, ShouldNotBeNil)
+			})
+
+			// return a ConfigPolicyNode
 			cfg, _ := cp.Get([]string{""}).Process(config)
+			Convey("validatation of returned ConfigPolicyNode", func() {
+				So(cfg, ShouldNotBeNil)
+			})
 
-			t := time.Now().String()
+			Convey("send the message", func() {
+				err := k.Publish(contentType, buf.Bytes(), *cfg)
+				So(err, ShouldBeNil)
+			})
 
-			// Send data to create topic. There is a weird bug where first message won't be consumed
-			// ref: http://mail-archives.apache.org/mod_mbox/kafka-users/201411.mbox/%3CCAHwHRrVmwyJg-1eyULkzwCUOXALuRA6BqcDV-ffSjEQ+tmT7dw@mail.gmail.com%3E
-			k.Publish("", []byte(t), *cfg)
-			// Send the same message. This will be consumed.
-			k.Publish("", []byte(t), *cfg)
+			Convey("verify data published to Kafka", func() {
+				m, err := consumer(topic, brokers)
+				So(err, ShouldBeNil)
+				So(m.Value, ShouldNotBeNil)
 
-			// start timer and wait
-			m, _ := consumer(topic, brokers)
-
-			Convey("So we should receive what we published to Kafka", func() {
-				So(string(m.Value), ShouldEqual, t)
+				Convey("check if marshalled metrics and published data to Kafka are equal", func() {
+					metricsAsJson, err := json.Marshal(metrics)
+					So(err, ShouldBeNil)
+					So(string(m.Value), ShouldEqual, string(metricsAsJson))
+				})
 			})
 		})
 	})
