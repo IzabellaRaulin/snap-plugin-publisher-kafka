@@ -82,8 +82,6 @@ func (k *kafkaPublisher) Publish(contentType string, content []byte, config map[
 
 	topic := config["topic"].(ctypes.ConfigValueStr).Value
 	brokers := parseBrokerString(config["brokers"].(ctypes.ConfigValueStr).Value)
-	//
-	//	err := k.publish(topic, brokers, content)
 	err = k.publish(topic, brokers, []byte(jsonOut))
 	return err
 }
