@@ -20,12 +20,12 @@ limitations under the License.
 package kafka
 
 import (
-//	"bufio"
+	//	"bufio"
 	"bytes"
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
-//	"os"
+	//	"os"
 
 	"strings"
 
@@ -84,12 +84,10 @@ func (k *kafkaPublisher) Publish(contentType string, content []byte, config map[
 
 	// Inserted codes end
 
-
-
 	topic := config["topic"].(ctypes.ConfigValueStr).Value
 	brokers := parseBrokerString(config["brokers"].(ctypes.ConfigValueStr).Value)
 	//
-//	err := k.publish(topic, brokers, content)
+	//	err := k.publish(topic, brokers, content)
 	err = k.publish(topic, brokers, []byte(jsonOut))
 	return err
 }
