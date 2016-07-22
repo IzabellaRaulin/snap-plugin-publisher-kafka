@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/intelsdi-x/snap-plugin-publisher-kafka.svg?token=HoxHq3yqBGpySzRd5XUm)](https://travis-ci.org/intelsdi-x/snap-plugin-publisher-kafka)
+[![Build Status](https://travis-ci.org/intelsdi-x/snap-plugin-publisher-kafka.svg?branch=master)](https://travis-ci.org/intelsdi-x/snap-plugin-publisher-kafka)
 
 # snap publisher plugin - Kafka
 
@@ -130,7 +130,7 @@ Load snap-plugin-publisher-kafka plugin:
 $ $SNAP_PATH/bin/snapctl plugin load build/rootfs/snap-plugin-publisher-kafka
 ```
 Create a task manifest to use Kafka publisher plugin (see [exemplary task](examples/tasks/)):
-```
+```json
 {
     "version": 1,
     "schedule": {
