@@ -69,7 +69,7 @@ Kafka uses ZooKeeper so you need to first start a ZooKeeper server if you don't 
 ```	
  $ docker run -d --name zookeeper jplock/zookeeper:3.4.6
 ```
-Verify if zookeeper docker is running:
+Check if ZooKeeper docker is running:
 ```	
 $ docker ps  
 
@@ -91,7 +91,7 @@ $ docker ps
 	9b0ddbdd75cd        jplock/zookeeper:3.4.6       "/opt/zookeeper/bin/   3 minutes ago       Up 3 minutes        2181/tcp, 2888/tcp, 3888/tcp                                        zookeeper
 ```
 
-#### Retreive Kafka advertised hostname:
+#### Get Kafka advertised hostname:
 ```	
 $ docker inspect --format '{{ .NetworkSettings.IPAddress }}' kafka
 
