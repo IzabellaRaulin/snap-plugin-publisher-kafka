@@ -181,8 +181,6 @@ Name: Task-02dd7ff4-8106-47e9-8b86-70067cd0a850
 State: Running
 ```
 
-During the task is running metrics are published to Kafka.
-
 To stop previously created task:
 ```
 $ $SNAP_PATH/bin/snapctl task stop 02dd7ff4-8106-47e9-8b86-70067cd0a850
