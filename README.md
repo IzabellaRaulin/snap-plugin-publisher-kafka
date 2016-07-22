@@ -112,7 +112,8 @@ In one terminal window, open the snap daemon (in this case with logging set to 1
 ```
 $ $SNAP_PATH/bin/snapd -l 1 -t 0
 ```
-In another terminal window:
+In another terminal window:  
+
 Load snap-plugin-collector-mock1 plugin:
 ```
 $ $SNAP_PATH/bin/snapctl plugin load $SNAP_PATH/plugin/snap-plugin-collector-mock1
@@ -170,6 +171,24 @@ Create a task manifest to use Kafka publisher plugin (see [exemplary task](examp
 }
 ```
 
+Create a task:
+```
+$ $SNAP_PATH/bin/snapctl task create -t examples/tasks/mock-kafka.json
+Using task manifest to create task
+Task created
+ID: 02dd7ff4-8106-47e9-8b86-70067cd0a850
+Name: Task-02dd7ff4-8106-47e9-8b86-70067cd0a850
+State: Running
+```
+
+During the task is running metrics are published to Kafka.
+
+To stop previously created task:
+```
+$ $SNAP_PATH/bin/snapctl task stop 02dd7ff4-8106-47e9-8b86-70067cd0a850
+Task stopped:
+ID: 02dd7ff4-8106-47e9-8b86-70067cd0a850
+```
 
 ### Roadmap
 
