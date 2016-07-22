@@ -41,7 +41,7 @@ import (
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-var mockMetric = plugin.MetricType{
+var mockMetricType = plugin.MetricType{
 	Namespace_:   core.NewNamespace("mock", "foo"),
 	Data_:        1,
 	Timestamp_:   time.Now(),
@@ -69,11 +69,11 @@ func TestPublish(t *testing.T) {
 
 		Convey("publish mock metrics and consume", func() {
 			contentType := plugin.SnapGOBContentType
-			metrics := []plugin.MetricType{
-				mockMetric,
+			mts := []plugin.MetricType{
+				mockMetricType,
 			}
 
-			enc.Encode(metrics)
+			enc.Encode(mts)
 
 			// set config items
 			config["brokers"] = ctypes.ConfigValueStr{Value: brokers}
@@ -103,7 +103,7 @@ func TestPublish(t *testing.T) {
 				So(m.Value, ShouldNotBeNil)
 
 				Convey("check if marshalled metrics and published data to Kafka are equal", func() {
-					metricsAsJson, err := json.Marshal(metrics)
+					metricsAsJson, err := json.Marshal(formatMetricTypes(mts))
 					So(err, ShouldBeNil)
 					So(string(m.Value), ShouldEqual, string(metricsAsJson))
 				})

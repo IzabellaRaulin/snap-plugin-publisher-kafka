@@ -24,9 +24,9 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
-
-	log "github.com/Sirupsen/logrus"
+	"time"
 
 	"github.com/intelsdi-x/snap/control/plugin"
 	"github.com/intelsdi-x/snap/control/plugin/cpolicy"
@@ -37,7 +37,7 @@ import (
 
 const (
 	PluginName    = "kafka"
-	PluginVersion = 7
+	PluginVersion = 8
 	PluginType    = plugin.PublisherPluginType
 )
 
@@ -51,52 +51,55 @@ func NewKafkaPublisher() *kafkaPublisher {
 	return &kafkaPublisher{}
 }
 
+type MetricToPublish struct {
+	Namespace          string            `json:"namespace"`
+	LastAdvertisedTime time.Time         `json:"last_advertised_time"`
+	Data               interface{}       `json:"data"`
+	Unit               string            `json:"unit"`
+	Tags               map[string]string `json:"tags"`
+	Timestamp          time.Time         `json:"timestamp"`
+}
+
 // Publish sends data to a Kafka server
 func (k *kafkaPublisher) Publish(contentType string, content []byte, config map[string]ctypes.ConfigValue) error {
-
-	// Inserted and modified codes from intelsdi-x/snap-plugin-publisher-file/file/file.go
-	logger := log.New()
-	logger.Println("Publishing started")
-	var metrics []plugin.MetricType
+	var mts []plugin.MetricType
 
 	switch contentType {
 	case plugin.SnapGOBContentType:
 		dec := gob.NewDecoder(bytes.NewBuffer(content))
-		if err := dec.Decode(&metrics); err != nil {
-			logger.Printf("Error decoding: error=%v content=%v", err, content)
-			return err
+		// decode incoming metrics types
+		if err := dec.Decode(&mts); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: invalid incoming content: %v, err=%v", content, err)
+			return fmt.Errorf("Cannot decode incoming content, err=%v", err)
 		}
 	default:
-		logger.Printf("Error unknown content type '%v'", contentType)
 		return fmt.Errorf("Unknown content type '%s'", contentType)
 	}
-
-	logger.Printf("publishing %v metrics to %v", len(metrics), config)
+	// format metrics types to metrics to be published
+	metrics := formatMetricTypes(mts)
 
 	jsonOut, err := json.Marshal(metrics)
 	if err != nil {
-		return fmt.Errorf("Error while marshalling metrics to JSON: %v", err)
+		return fmt.Errorf("Cannot marshal metrics to JSON format, err=%v", err)
 	}
-
-	// Inserted codes end
 
 	topic := config["topic"].(ctypes.ConfigValueStr).Value
 	brokers := parseBrokerString(config["brokers"].(ctypes.ConfigValueStr).Value)
-	err = k.publish(topic, brokers, []byte(jsonOut))
-	return err
+
+	return k.publish(topic, brokers, []byte(jsonOut))
 }
 
 func (k *kafkaPublisher) GetConfigPolicy() (*cpolicy.ConfigPolicy, error) {
 	cp := cpolicy.New()
 	config := cpolicy.NewPolicyNode()
 
-	r1, err := cpolicy.NewStringRule("topic", true)
+	r1, err := cpolicy.NewStringRule("topic", false, "snap")
 	handleErr(err)
 	r1.Description = "Kafka topic for publishing"
 
-	r2, _ := cpolicy.NewStringRule("brokers", true)
+	r2, _ := cpolicy.NewStringRule("brokers", false, "localhost:9092")
 	handleErr(err)
-	r2.Description = "List of brokers in the format: broker-ip:port;broker-ip:port (ex: 192.168.1.1:9092;172.16.9.99:9092"
+	r2.Description = "List of brokers separated by semicolon in the format: <broker-ip:port;broker-ip:port> (ex: \"192.168.1.1:9092;172.16.9.99:9092\")"
 
 	config.Add(r1, r2)
 	cp.Add([]string{""}, config)
@@ -107,7 +110,7 @@ func (k *kafkaPublisher) GetConfigPolicy() (*cpolicy.ConfigPolicy, error) {
 func (k *kafkaPublisher) publish(topic string, brokers []string, content []byte) error {
 	producer, err := sarama.NewSyncProducer(brokers, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("Cannot initialize a new Sarama SyncProducer using the given broker addresses (%v), err=%v", brokers, err)
 	}
 
 	_, _, err = producer.SendMessage(&sarama.ProducerMessage{
@@ -117,8 +120,28 @@ func (k *kafkaPublisher) publish(topic string, brokers []string, content []byte)
 	return err
 }
 
+// formatMetricTypes returns metrics in format to be publish as a JSON based on incoming metrics types;
+// i.a. namespace is formatted as a single string
+func formatMetricTypes(mts []plugin.MetricType) []MetricToPublish {
+	var metrics []MetricToPublish
+	for _, mt := range mts {
+		metrics = append(metrics, MetricToPublish{
+			Timestamp:          mt.Timestamp(),
+			Namespace:          mt.Namespace().String(),
+			Data:               mt.Data(),
+			Unit:               mt.Unit(),
+			Tags:               mt.Tags(),
+			LastAdvertisedTime: mt.LastAdvertisedTime(),
+		})
+	}
+	return metrics
+}
 func parseBrokerString(brokerStr string) []string {
-	return strings.Split(brokerStr, ";")
+	// remove spaces from 'brokerStr'
+	brokers := strings.Replace(brokerStr, " ", "", -1)
+
+	// return split brokers separated by semicolon
+	return strings.Split(brokers, ";")
 }
 
 func handleErr(e error) {

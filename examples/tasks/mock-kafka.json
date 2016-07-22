@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "schedule": {
+    "type": "simple",
+    "interval": "5s"
+  },
+  "workflow": {
+    "collect": {
+      "metrics": {
+        "/intel/mock/foo": {},
+        "/intel/mock/bar": {},
+        "/intel/mock/*/baz": {}
+      },
+      "config": {
+        "/intel/mock": {
+          "user": "root",
+          "password": "secret"
+        }
+      },
+      "process": [
+        {
+          "plugin_name": "passthru",
+          "publish": [
+            {
+              "plugin_name": "kafka",
+              "config": {
+                "topic": "test",
+                "brokers": "172.17.0.14:9092"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
