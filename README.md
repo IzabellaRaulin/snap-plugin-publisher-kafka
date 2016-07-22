@@ -130,6 +130,7 @@ Load snap-plugin-publisher-kafka plugin:
 $ $SNAP_PATH/bin/snapctl plugin load build/rootfs/snap-plugin-publisher-kafka
 ```
 Create a task manifest to use Kafka publisher plugin (see [exemplary task](examples/tasks/)):
+
 ```json
 {
     "version": 1,
