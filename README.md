@@ -73,8 +73,8 @@ Check if ZooKeeper docker is running:
 ```	
 $ docker ps  
 
-	CONTAINER ID        IMAGE                      COMMAND                CREATED             STATUS              PORTS              NAMES
-	9b0ddbdd75cd        jplock/zookeeper:3.4.6     "/opt/zookeeper/bin/   38 seconds ago      Up 38 seconds       2181/tcp, 2888/tcp, 3888/tcp                                        zookeeper
+	CONTAINER ID        IMAGE                      COMMAND                CREATED             STATUS              PORTS              			NAMES
+	9b0ddbdd75cd        jplock/zookeeper:3.4.6     "/opt/zookeeper/bin/   38 seconds ago      Up 38 seconds       2181/tcp, 2888/tcp, 3888/tcp	zookeeper
 ```  
 
 #### Run Kafka server on docker
@@ -86,9 +86,9 @@ $ docker ps
 ```	
 $ docker ps
 
-	CONTAINER ID        IMAGE                        COMMAND                CREATED             STATUS              PORTS                                                               NAMES
-	dfb3cdfb3f87        ches/kafka:latest            "/start.sh"            7 seconds ago       Up 6 seconds        7203/tcp, 9092/tcp                                                  kafka
-	9b0ddbdd75cd        jplock/zookeeper:3.4.6       "/opt/zookeeper/bin/   3 minutes ago       Up 3 minutes        2181/tcp, 2888/tcp, 3888/tcp                                        zookeeper
+	CONTAINER ID        IMAGE                        COMMAND                CREATED             STATUS              PORTS							NAMES
+	dfb3cdfb3f87        ches/kafka:latest            "/start.sh"            7 seconds ago       Up 6 seconds        7203/tcp, 9092/tcp				kafka
+	9b0ddbdd75cd        jplock/zookeeper:3.4.6       "/opt/zookeeper/bin/   3 minutes ago       Up 3 minutes        2181/tcp, 2888/tcp, 3888/tcp	zookeeper
 ```
 
 #### Get Kafka advertised hostname:
