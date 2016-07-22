@@ -11,7 +11,7 @@ It's used in the [snap framework](http://github.com/intelsdi-x/snap).
   * [Installation](#installation)
   * [Configuration and Usage](#configuration-and-usage)
 2. [Documentation](#documentation)
-  * [Quick Start on Kafka](#quick-start-on-kafka)
+  * [Kafka Quickstart](#kafka-quickstart)
   * [Examples](#examples)
   * [Roadmap](#roadmap)
 3. [Community Support](#community-support)
@@ -60,7 +60,7 @@ In task manifest, in config section of Kafka publisher the following settings ca
 
 ## Documentation
 
-### Quick Start on Kafka
+### Kafka Quickstart
 
 This is a minimal-configuration needed to run the Kafka broker service on Docker
 
