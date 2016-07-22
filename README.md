@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/intelsdi-x/snap-plugin-publisher-kafka.svg?token=HoxHq3yqBGpySzRd5XUm)](https://travis-ci.com/intelsdi-x/snap-plugin-publisher-kafka)
+[![Build Status](https://travis-ci.org/intelsdi-x/snap-plugin-publisher-kafka.svg?token=HoxHq3yqBGpySzRd5XUm)](https://travis-ci.org/intelsdi-x/snap-plugin-publisher-kafka)
 
 # snap publisher plugin - Kafka
 
